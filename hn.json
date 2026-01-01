@@ -1,0 +1,22 @@
+{
+    "version": "0.0.1",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.1/hn_0.0.1_windows_amd64.zip",
+            "bin": [
+                "hn.exe"
+            ],
+            "hash": "82f7c4f0a06dec2ac4ede5c9790cd3adf94662c063e5af9c6e14c44864f198e0"
+        },
+        "arm64": {
+            "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.1/hn_0.0.1_windows_arm64.zip",
+            "bin": [
+                "hn.exe"
+            ],
+            "hash": "be82b4c1507e32615ec4b56ba07b4040c98f8b027f1ea9e884700a5129ec86d2"
+        }
+    },
+    "homepage": "https://github.com/adil-adysh/hashnode-cli",
+    "license": "MIT",
+    "description": "Hashnode CLI"
+}
