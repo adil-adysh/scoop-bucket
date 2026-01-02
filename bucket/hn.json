@@ -6,14 +6,14 @@
             "bin": [
                 "hn.exe"
             ],
-            "hash": "b5d3778ce7650631dc1f3d2f95be86ce5f183fb47183eb9f23e133ab3c41df75"
+            "hash": "0f2ba134a5882a67dd1d8351d7fe5daebf261fea703d900194356e5f84ac40a0"
         },
         "arm64": {
             "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.3/hn_0.0.3_windows_arm64.tar.gz",
             "bin": [
                 "hn.exe"
             ],
-            "hash": "aa58eaab30e0a832bface056374c11a08b763718a6a1fa4f335a6cda3f980051"
+            "hash": "6fe629eaabfd115ad33a176a2dc627117566e3ff681334b228c231676c6dda17"
         }
     },
     "homepage": "https://github.com/adil-adysh/hashnode-cli",
