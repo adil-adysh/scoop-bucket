@@ -1,22 +1,22 @@
 {
-    "version": "0.0.2",
+    "version": "0.0.3",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.2/hn_0.0.2_windows_amd64.zip",
+            "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.3/hn_0.0.3_windows_amd64.tar.gz",
             "bin": [
                 "hn.exe"
             ],
-            "hash": "3fa2abf0c0f170e412ee90b3a2b797ddb18b07c38a2563c6b225983c672a2754"
+            "hash": "b5d3778ce7650631dc1f3d2f95be86ce5f183fb47183eb9f23e133ab3c41df75"
         },
         "arm64": {
-            "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.2/hn_0.0.2_windows_arm64.zip",
+            "url": "https://github.com/adil-adysh/hashnode-cli/releases/download/v0.0.3/hn_0.0.3_windows_arm64.tar.gz",
             "bin": [
                 "hn.exe"
             ],
-            "hash": "54d197ed45b2b76d76c17fdd4754c5740428d636a249db88ac749c6823bf95d8"
+            "hash": "aa58eaab30e0a832bface056374c11a08b763718a6a1fa4f335a6cda3f980051"
         }
     },
     "homepage": "https://github.com/adil-adysh/hashnode-cli",
-    "license": "MIT",
-    "description": "Hashnode CLI"
+    "license": "Apache-2.0",
+    "description": "Unofficial Hashnode CLI - Write and manage blogs from your terminal."
 }
