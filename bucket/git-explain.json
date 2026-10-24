@@ -1,5 +1,5 @@
 {
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Accessible local explanations for changed source code",
     "homepage": "https://github.com/adil-adysh/git-explain",
     "license": "Apache-2.0",
@@ -7,8 +7,8 @@
     "bin": "git-explain.exe",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/adil-adysh/git-explain/releases/download/v0.2.1/git-explain-v0.2.1-windows-x86_64.zip",
-            "hash": "daa417569bb5e5035a8aeb15db81c71d462a20d8623c4d90f743e02b07a6b06c"
+            "url": "https://github.com/adil-adysh/git-explain/releases/download/v0.2.2/git-explain-v0.2.2-windows-x86_64.zip",
+            "hash": "509bab709e657614f7ffdd4c3317b8b00dbe2c81f4a89d380ddf87634c745b38"
         }
     },
     "checkver": "github",
