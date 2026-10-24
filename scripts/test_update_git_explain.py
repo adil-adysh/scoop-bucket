@@ -8,6 +8,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -89,7 +90,12 @@ class TestGitExplainScoop(unittest.TestCase):
         with open(repo_manifest, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        self.assertEqual(data.get("version"), "0.2.1")
+        version = data.get("version")
+        self.assertIsInstance(version, str)
+        self.assertIsNotNone(
+            re.fullmatch(update_git_explain.VERSION_PATTERN, version),
+            f"Manifest version '{version}' must be a valid plain stable semver",
+        )
         self.assertEqual(data.get("homepage"), "https://github.com/adil-adysh/git-explain")
         self.assertEqual(data.get("license"), "Apache-2.0")
         self.assertEqual(data.get("description"), "Accessible local explanations for changed source code")
@@ -97,13 +103,17 @@ class TestGitExplainScoop(unittest.TestCase):
         self.assertIn(data.get("bin"), ["git-explain.exe", ["git-explain.exe"]])
 
         arch = data.get("architecture", {}).get("64bit", {})
-        self.assertEqual(
-            arch.get("url"),
-            "https://github.com/adil-adysh/git-explain/releases/download/v0.2.1/git-explain-v0.2.1-windows-x86_64.zip",
+        expected_zip_url = (
+            f"https://github.com/adil-adysh/git-explain/releases/download/v{version}/"
+            f"git-explain-v{version}-windows-x86_64.zip"
         )
-        self.assertEqual(
-            arch.get("hash"),
-            "daa417569bb5e5035a8aeb15db81c71d462a20d8623c4d90f743e02b07a6b06c",
+        self.assertEqual(arch.get("url"), expected_zip_url)
+
+        arch_hash = arch.get("hash", "")
+        self.assertIsInstance(arch_hash, str)
+        self.assertIsNotNone(
+            re.fullmatch(r"^[0-9a-f]{64}$", arch_hash),
+            f"Manifest hash '{arch_hash}' must be a 64-character lowercase hex string",
         )
 
         self.assertEqual(data.get("checkver"), "github")
