@@ -77,7 +77,8 @@ jobs:
           "$shimsDir" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
           # Add local checked-out bucket so local PR manifest is validated
-          scoop bucket add adil-adysh $env:GITHUB_WORKSPACE
+          $workspaceUri = ([System.Uri](Resolve-Path -LiteralPath $env:GITHUB_WORKSPACE).Path).AbsoluteUri
+          scoop bucket add adil-adysh $workspaceUri
           if ($LASTEXITCODE -ne 0) {
             throw "Failed to add local bucket adil-adysh ($LASTEXITCODE)"
           }
