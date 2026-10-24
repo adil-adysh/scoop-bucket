@@ -1,0 +1,44 @@
+name: Update git-explain Manifest
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-git-explain
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Check and Update git-explain
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+
+      - name: Run fixture tests
+        run: python3 -B scripts/test_update_git_explain.py
+
+      - name: Run updater
+        run: python3 -B scripts/update_git_explain.py --output bucket/git-explain.json
+
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet bucket/git-explain.json; then
+            echo "No changes to bucket/git-explain.json"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add bucket/git-explain.json
+            git commit -m "Update git-explain to $(python3 -c 'import json; print(json.load(open("bucket/git-explain.json"))["version"])')"
+            git push
+          fi

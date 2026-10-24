@@ -1,0 +1,117 @@
+name: Test
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit tests and actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run unit tests
+        run: python3 -B scripts/test_update_git_explain.py
+
+      - name: Run actionlint (if available)
+        run: |
+          if command -v actionlint >/dev/null 2>&1; then
+            actionlint .github/workflows/test.yml .github/workflows/update-git-explain.yml
+          else
+            echo "actionlint not found on runner; skipping"
+          fi
+
+  validate-windows-install:
+    name: Validate Scoop install on Windows
+    runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout bucket repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Checkout Scoop installer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ScoopInstaller/Install
+          ref: 1e2f334083d609986d8c8bc9e31ae8e87c39fab4
+          path: target/scoop-installer
+          persist-credentials: false
+
+      - name: Bootstrap Scoop and Validate Package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version Latest
+
+          # Isolated paths in runner temp directory
+          $scoopDir = Join-Path $env:RUNNER_TEMP "scoop"
+          $scoopGlobalDir = Join-Path $env:RUNNER_TEMP "scoop-global"
+          $scoopCacheDir = Join-Path $env:RUNNER_TEMP "scoop-cache"
+          $env:SCOOP = $scoopDir
+          $env:SCOOP_GLOBAL = $scoopGlobalDir
+          $global:LASTEXITCODE = 0
+
+          # Bootstrap Scoop using official installer with administrator flag
+          & target/scoop-installer/install.ps1 -ScoopDir $scoopDir -ScoopGlobalDir $scoopGlobalDir -ScoopCacheDir $scoopCacheDir -RunAsAdmin
+          if ($LASTEXITCODE -ne 0) {
+            throw "Scoop installer failed with exit code $LASTEXITCODE"
+          }
+
+          # Prepend shims to process PATH
+          $shimsDir = Join-Path $scoopDir "shims"
+          $env:PATH = "$shimsDir;$env:PATH"
+          "$shimsDir" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+          # Add local checked-out bucket so local PR manifest is validated
+          scoop bucket add adil-adysh $env:GITHUB_WORKSPACE
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to add local bucket adil-adysh ($LASTEXITCODE)"
+          }
+
+          # Install git-explain from local bucket
+          scoop install adil-adysh/git-explain
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install adil-adysh/git-explain ($LASTEXITCODE)"
+          }
+
+          # Ensure shim exists
+          $shimExe = Join-Path $shimsDir "git-explain.exe"
+          if (-not (Test-Path $shimExe)) {
+            throw "Expected shim executable not found at $shimExe"
+          }
+
+          # Verify command execution: standalone binary
+          & git-explain -h
+          if ($LASTEXITCODE -ne 0) {
+            throw "git-explain -h returned non-zero exit code $LASTEXITCODE"
+          }
+
+          # Verify command execution: git subcommand
+          & git explain -h
+          if ($LASTEXITCODE -ne 0) {
+            throw "git explain -h returned non-zero exit code $LASTEXITCODE"
+          }
+
+          # Uninstall package and verify shim removal
+          scoop uninstall git-explain
+          if ($LASTEXITCODE -ne 0) {
+            throw "scoop uninstall git-explain failed with exit code $LASTEXITCODE"
+          }
+
+          if (Test-Path $shimExe) {
+            throw "Expected shim $shimExe to be removed after uninstall, but file still exists"
+          }
